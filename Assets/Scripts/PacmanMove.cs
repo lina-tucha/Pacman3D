@@ -192,4 +192,24 @@ public class PacmanMove : MonoBehaviour
         }
         
     }
+
+    public bool Get_looking_North() 
+    {
+        return looking_North;
+    }
+
+    public bool Get_looking_South() 
+    {
+        return looking_South;
+    }
+
+    public bool Get_looking_East() 
+    {
+        return looking_East;
+    }
+
+    public bool Get_looking_West() 
+    {
+        return looking_West;
+    }
 }
