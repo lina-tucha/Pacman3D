@@ -136,6 +136,11 @@ public class PacmanMove : MonoBehaviour
             }
         }
 
+        if (transform.position.y != 2.5f)
+        {
+            transform.position = new Vector3(transform.position.x, 2.5f, transform.position.z);
+        }
+
         SetTarget();
 
         Vector3 toLocation = new Vector3(target_X, 2.5f, target_Z);
