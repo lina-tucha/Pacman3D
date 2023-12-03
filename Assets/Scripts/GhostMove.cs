@@ -32,6 +32,12 @@ public class GhostMove : MonoBehaviour
 
     public ModeChange mode;
 
+    private bool dead;
+    public GameObject Head;
+    private int running_mode_material;
+    private float running_mode_targetTime;
+    private bool running_mode_finish_ghosts;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -91,7 +97,10 @@ public class GhostMove : MonoBehaviour
             targetTime = 13f;
         }
         Y_rotation = transform.eulerAngles.y;
-
+        dead = false;
+        running_mode_material = 0;
+        running_mode_targetTime = 0.25f;
+        running_mode_finish_ghosts = true;
     }
 
 
@@ -124,7 +133,7 @@ public class GhostMove : MonoBehaviour
         if (Red || Pink || Blue)
         {
             if (transform.position.x > 35 && transform.position.x < 61 &&
-                transform.position.z > -5 && transform.position.z < 6)
+                transform.position.z > -5 && transform.position.z < 6 && !dead)
             {
                 limit = true;
             }
@@ -132,7 +141,7 @@ public class GhostMove : MonoBehaviour
         else if (Orange)
         {
             if (transform.position.x > 35 && transform.position.x < 50.1 &&
-                transform.position.z > -5 && transform.position.z < 6)
+                transform.position.z > -5 && transform.position.z < 6 && !dead)
             {
                 limit = true;
             }
@@ -161,7 +170,7 @@ public class GhostMove : MonoBehaviour
         bool limit = false;
 
         if (transform.position.x > 35 && transform.position.x < 61 &&
-                transform.position.z > -5 && transform.position.z < 11)
+                transform.position.z > -5 && transform.position.z < 11 && !dead)
         {
             limit = true;
         }
@@ -191,7 +200,7 @@ public class GhostMove : MonoBehaviour
         if (Red || Pink || Orange)
         {
             if (transform.position.x > 35 && transform.position.x < 61 &&
-                transform.position.z > -5 && transform.position.z < 6)
+                transform.position.z > -5 && transform.position.z < 6 && !dead)
             {
                 limit = true;
             }
@@ -199,7 +208,7 @@ public class GhostMove : MonoBehaviour
         else if (Blue)
         {
             if (transform.position.x > 44.9 && transform.position.x < 61 &&
-                transform.position.z > -5 && transform.position.z < 6)
+                transform.position.z > -5 && transform.position.z < 6 && !dead)
             {
                 limit = true;
             }
@@ -402,6 +411,53 @@ public class GhostMove : MonoBehaviour
             }
         }
 
+        if (mode.GetRunningMode())
+        {
+            target_X = UnityEngine.Random.Range(0, 99);
+            target_Z = UnityEngine.Random.Range(30, -30);
+        }
+
+        if (dead)
+        {
+            if(transform.position.x > 34.9f && transform.position.x < 60.1f
+                && transform.position.z < 10.1f && transform.position.z > -0.1f)
+                {
+                    if (Red)
+                    {
+                        target_X = 45;
+                        target_Z = 0;
+                    }
+                    else if (Pink)
+                    {
+                        target_X = 50;
+                        target_Z = 0;
+                    }
+                    else if (Blue)
+                    {
+                        target_X = 40;
+                        target_Z = 0;
+                    }
+                    else if (Orange)
+                    {
+                        target_X = 55;
+                        target_Z = 0;
+                    }
+                }
+                else 
+                {
+                    if (transform.position.x > 50)
+                    {
+                        target_X = 60;
+                        target_Z = 10;
+                    }
+                    else 
+                    {
+                        target_X = 35;
+                        target_Z = 10;
+                    }
+                }
+        }
+
         Target_.transform.position = new Vector3(target_X, 7, target_Z);
 
         double up_distance = Math.Pow((target_X - up_move_X), 2) + Math.Pow((target_Z - up_move_Z), 2);
@@ -542,9 +598,113 @@ public class GhostMove : MonoBehaviour
     }
 
 
+    public void SetRunningModeFinishGhosts(bool value)
+    {
+        running_mode_finish_ghosts = value;
+    }
+
+    public void SetDead(bool value)
+    {
+        dead = value;
+    }
+
+    public bool GetDead()
+    {
+        return dead;
+    }
+
+
     // Update is called once per frame
     void Update()
     {
+        if (dead)
+        {
+            Material newMat = Resources.Load("Dead", typeof(Material)) as Material;
+            GetComponent<Renderer>().material = Head.GetComponent<Renderer>().material = newMat;
+            smoothFactor = 0.09f;
+
+            if ((Red && (transform.position.x > 44 && transform.position.x < 46 && 
+                transform.position.z < 0.01f && transform.position.z > -0.1f)) ||
+                (Pink && (transform.position.x > 49 && transform.position.x < 51 && 
+                transform.position.z < 0.01f && transform.position.z > -0.1f)) ||
+                (Blue && (transform.position.x > 39 && transform.position.x < 41 && 
+                transform.position.z < 0.01f && transform.position.z > -0.1f)) ||
+                (Orange && (transform.position.x > 54 && transform.position.x < 56 && 
+                transform.position.z < 0.01f && transform.position.z > -0.1f)))
+            {
+                dead = false;
+
+                if (Red)
+                {
+                    transform.position = new Vector3(45, 2.5f, 0);
+                }
+                else if (Pink)
+                {
+                    transform.position = new Vector3(50, 2.5f, 0);
+                }
+                else if (Blue)
+                {
+                    transform.position = new Vector3(40, 2.5f, 0);
+                }
+                else if (Orange)
+                {
+                    transform.position = new Vector3(55, 2.5f, 0);
+                }
+
+                transform.rotation = Quaternion.Euler(0, 0, 0);
+                running_mode_finish_ghosts = true;
+            }
+        }
+        else 
+        {
+            if (mode.GetRunningModeFinish() && !running_mode_finish_ghosts)
+            {
+                running_mode_targetTime -= Time.deltaTime;
+
+                if (running_mode_targetTime <= 0.0f)
+                {
+                    running_mode_material++;
+                    running_mode_targetTime = 0.25f;
+                }
+
+                if (running_mode_material == 1)
+                {
+                    Material newMat = Resources.Load("RunningBlue", typeof(Material)) as Material;
+                    GetComponent<Renderer>().material = Head.GetComponent<Renderer>().material = newMat;
+                }
+                else if (running_mode_material == 2)
+                {
+                    Material newMat = Resources.Load("RunningWhite", typeof(Material)) as Material;
+                    GetComponent<Renderer>().material = Head.GetComponent<Renderer>().material = newMat;
+                    running_mode_material = 0;
+                }
+            }
+            else 
+            {
+                if (Red)
+                {
+                    Material newMat = Resources.Load("RedGhost", typeof(Material)) as Material;
+                    GetComponent<Renderer>().material = Head.GetComponent<Renderer>().material = newMat;
+                }
+                else if (Pink)
+                {
+                    Material newMat = Resources.Load("PinkGhost", typeof(Material)) as Material;
+                    GetComponent<Renderer>().material = Head.GetComponent<Renderer>().material = newMat;
+                }
+                else if (Blue)
+                {
+                    Material newMat = Resources.Load("BlueGhost", typeof(Material)) as Material;
+                    GetComponent<Renderer>().material = Head.GetComponent<Renderer>().material = newMat;
+                }
+                else if (Orange)
+                {
+                    Material newMat = Resources.Load("OrangeGhost", typeof(Material)) as Material;
+                    GetComponent<Renderer>().material = Head.GetComponent<Renderer>().material = newMat;
+                }
+            }
+            smoothFactor = 0.03f;
+        }
+
         if (start_to_move) 
         {
             if (Ghost_Up && !Ghost_Limitcontrol())

@@ -1433,7 +1433,7 @@ GameObject:
   - component: {fileID: 470875446}
   m_Layer: 0
   m_Name: RedGhost
-  m_TagString: Untagged
+  m_TagString: Ghost
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1546,6 +1546,7 @@ MonoBehaviour:
   Blinky: {fileID: 0}
   Target_: {fileID: 328709247}
   mode: {fileID: 705507997}
+  Head: {fileID: 470875441}
 --- !u!1 &471509861
 GameObject:
   m_ObjectHideFlags: 0
@@ -3696,7 +3697,7 @@ GameObject:
   - component: {fileID: 1319511053}
   m_Layer: 0
   m_Name: 'PinkGhost '
-  m_TagString: Untagged
+  m_TagString: Ghost
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3809,6 +3810,7 @@ MonoBehaviour:
   Blinky: {fileID: 0}
   Target_: {fileID: 287410896}
   mode: {fileID: 705507997}
+  Head: {fileID: 1319511048}
 --- !u!1 &1340454476
 GameObject:
   m_ObjectHideFlags: 0
@@ -4512,7 +4514,7 @@ GameObject:
   - component: {fileID: 1538560056}
   m_Layer: 0
   m_Name: BlueGhost
-  m_TagString: Untagged
+  m_TagString: Ghost
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4625,6 +4627,7 @@ MonoBehaviour:
   Blinky: {fileID: 328709247}
   Target_: {fileID: 1398080538}
   mode: {fileID: 705507997}
+  Head: {fileID: 1538560051}
 --- !u!1 &1540886159
 GameObject:
   m_ObjectHideFlags: 0
@@ -5167,7 +5170,7 @@ GameObject:
   - component: {fileID: 1672318594}
   m_Layer: 0
   m_Name: OrangeGhost
-  m_TagString: Untagged
+  m_TagString: Ghost
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5280,6 +5283,7 @@ MonoBehaviour:
   Blinky: {fileID: 0}
   Target_: {fileID: 1410169048}
   mode: {fileID: 705507997}
+  Head: {fileID: 1672318589}
 --- !u!1 &1716284466
 GameObject:
   m_ObjectHideFlags: 0
@@ -6060,6 +6064,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 137ca477412149048ab5dc6bb7446947, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mode: {fileID: 705507997}
+  Red: {fileID: 470875446}
+  Pink: {fileID: 1319511053}
+  Blue: {fileID: 1538560056}
+  Orange: {fileID: 1672318594}
 --- !u!1 &1986579280
 GameObject:
   m_ObjectHideFlags: 0

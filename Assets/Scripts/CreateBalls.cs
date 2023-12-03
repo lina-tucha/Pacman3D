@@ -26,6 +26,7 @@ public class CreateBalls : MonoBehaviour
 
                     if ((i == 0 || i == 8) && (j == 0 || j == 17))
                     {
+                        ball.gameObject.tag = "SuperBall";
                         ball.transform.localScale = new Vector3(2, 2, 2);
                         newMat = Resources.Load("SuperBall", typeof(Material)) as Material;
                         ball.GetComponent<Renderer>().material = newMat;
