@@ -6,113 +6,108 @@ using System.Linq;
 
 public class GhostMove : MonoBehaviour
 {
-    private bool Red;
-    private bool Pink;
-    private bool Blue;
-    private bool Orange;
-
+    private bool red;
+    private bool pink;
+    private bool blue;
+    private bool orange;
     public float smoothFactor;
-    private float Y_rotation;
-    private bool start_to_move;
+    private float rotationY;
+    private bool startToMove;
     private float targetTime;
-
-    public GameObject Walls; // Maze
-    public GameObject Pacman;
-
-    private bool Ghost_Up;
-    private bool Ghost_Left;
-    private bool Ghost_Down;
-    private bool Ghost_Right;
-
-    private bool[] Limit_Directions;
-    private bool[] New_Limit_Directions;
-
-    public GameObject Blinky;
-    public GameObject Target_;
-
+    public GameObject maze;
+    public GameObject pacman;
+    private bool ghostUp;
+    private bool ghostLeft;
+    private bool ghostDown;
+    private bool ghostRight;
+    private bool[] limitDirections;
+    private bool[] newLimitDirections;
+    public GameObject targetRed;
+    public GameObject target;
     public ModeChange mode;
-
     private bool dead;
-    public GameObject Head;
-    private int running_mode_material;
-    private float running_mode_targetTime;
-    private bool running_mode_finish_ghosts;
+    public GameObject body;
+    private int panicModeMaterial;
+    private float panicModeTargetTime;
+    private bool panicModeFinishGhosts;
+    public bool gameGoOn;
 
-    // Start is called before the first frame update
-    void Start()
+
+    public void Start()
     {
-        Red = false;
-        Pink = false;
-        Blue = false;
-        Orange = false;
-        start_to_move = false;
-        New_Limit_Directions = new bool[4] {false, false, false, false};
+        red = false;
+        pink = false;
+        blue = false;
+        orange = false;
+        startToMove = false;
+        newLimitDirections = new bool[4] {false, false, false, false};
 
         if (gameObject.name.Contains("Red"))
         {
-            Red = true;
+            red = true;
 
-            Ghost_Up = true;
-            Ghost_Left = false;
-            Ghost_Down = false;
-            Ghost_Right = false;
+            ghostUp = true;
+            ghostLeft = false;
+            ghostDown = false;
+            ghostRight = false;
 
-            Limit_Directions = new bool[4] {false, true, true, true};
+            limitDirections = new bool[4] {false, true, true, true};
             targetTime = 1f;
         }
         else if (gameObject.name.Contains("Pink"))
         {
-            Pink = true;
+            pink = true;
 
-            Ghost_Up = true;
-            Ghost_Left = false;
-            Ghost_Down = false;
-            Ghost_Right = false;
+            ghostUp = true;
+            ghostLeft = false;
+            ghostDown = false;
+            ghostRight = false;
 
-            Limit_Directions = new bool[4] {false, true, true, true};
+            limitDirections = new bool[4] {false, true, true, true};
             targetTime = 5f;
         }
         else if (gameObject.name.Contains("Blue"))
         {
-            Blue = true;
+            blue = true;
 
-            Ghost_Up = false;
-            Ghost_Left = false;
-            Ghost_Down = false;
-            Ghost_Right = true;
+            ghostUp = false;
+            ghostLeft = false;
+            ghostDown = false;
+            ghostRight = true;
 
-            Limit_Directions = new bool[4] {true, true, true, false};
+            limitDirections = new bool[4] {true, true, true, false};
             targetTime = 9f;
         }
         else if (gameObject.name.Contains("Orange"))
         {
-            Orange = true;
+            orange = true;
 
-            Ghost_Up = false;
-            Ghost_Left = true;
-            Ghost_Down = false;
-            Ghost_Right = false;
+            ghostUp = false;
+            ghostLeft = true;
+            ghostDown = false;
+            ghostRight = false;
 
-            Limit_Directions = new bool[4] {true, false, true, true};
+            limitDirections = new bool[4] {true, false, true, true};
             targetTime = 13f;
         }
-        Y_rotation = transform.eulerAngles.y;
+        rotationY = transform.eulerAngles.y;
+
         dead = false;
-        running_mode_material = 0;
-        running_mode_targetTime = 0.25f;
-        running_mode_finish_ghosts = true;
+        panicModeMaterial = 0;
+        panicModeTargetTime = 0.25f;
+        panicModeFinishGhosts = true;
+        gameGoOn = true;
     }
 
-
-    private bool Up_Limits()
+    private bool UpLimits()
     {
         bool limit = false;
 
         if (!limit)
         {
-            for (int i = 0; i < Walls.transform.childCount; ++i)
+            for (int i = 0; i < maze.transform.childCount; ++i)
             {
-                GameObject w = Walls.transform.GetChild(i).gameObject;
+                GameObject w = maze.transform.GetChild(i).gameObject;
 
                 if (Math.Round(transform.position.x) < w.transform.position.x + ((transform.localScale.x + w.transform.localScale.x) / 2)
                     && Math.Round(transform.position.x) > w.transform.position.x - ((transform.localScale.x + w.transform.localScale.x) / 2)
@@ -126,11 +121,11 @@ public class GhostMove : MonoBehaviour
         return limit;
     }
 
-    private bool Left_Limits()
+    private bool LeftLimits()
     {
         bool limit = false;
 
-        if (Red || Pink || Blue)
+        if (red || pink || blue)
         {
             if (transform.position.x > 35 && transform.position.x < 61 &&
                 transform.position.z > -5 && transform.position.z < 6 && !dead)
@@ -138,7 +133,7 @@ public class GhostMove : MonoBehaviour
                 limit = true;
             }
         }
-        else if (Orange)
+        else if (orange)
         {
             if (transform.position.x > 35 && transform.position.x < 50.1 &&
                 transform.position.z > -5 && transform.position.z < 6 && !dead)
@@ -149,9 +144,9 @@ public class GhostMove : MonoBehaviour
 
         if (!limit)
         {
-            for (int i = 0; i < Walls.transform.childCount; ++i)
+            for (int i = 0; i < maze.transform.childCount; ++i)
             {
-                GameObject w = Walls.transform.GetChild(i).gameObject;
+                GameObject w = maze.transform.GetChild(i).gameObject;
 
                 if (Math.Round(transform.position.z) < w.transform.position.z + ((transform.localScale.z + w.transform.localScale.z) / 2)
                     && Math.Round(transform.position.z) > w.transform.position.z - ((transform.localScale.z + w.transform.localScale.z) / 2)
@@ -165,7 +160,7 @@ public class GhostMove : MonoBehaviour
         return limit;
     }
 
-    private bool Down_Limits()
+    private bool DownLimits()
     {
         bool limit = false;
 
@@ -177,9 +172,9 @@ public class GhostMove : MonoBehaviour
 
         if (!limit)
         {
-            for (int i = 0; i < Walls.transform.childCount; ++i)
+            for (int i = 0; i < maze.transform.childCount; ++i)
             {
-                GameObject w = Walls.transform.GetChild(i).gameObject;
+                GameObject w = maze.transform.GetChild(i).gameObject;
 
                 if (Math.Round(transform.position.x) < w.transform.position.x + ((transform.localScale.x + w.transform.localScale.x) / 2)
                     && Math.Round(transform.position.x) > w.transform.position.x - ((transform.localScale.x + w.transform.localScale.x) / 2)
@@ -193,11 +188,11 @@ public class GhostMove : MonoBehaviour
         return limit;
     }
 
-    private bool Right_Limits()
+    private bool RightLimits()
     {
         bool limit = false;
 
-        if (Red || Pink || Orange)
+        if (red || pink || orange)
         {
             if (transform.position.x > 35 && transform.position.x < 61 &&
                 transform.position.z > -5 && transform.position.z < 6 && !dead)
@@ -205,7 +200,7 @@ public class GhostMove : MonoBehaviour
                 limit = true;
             }
         }
-        else if (Blue)
+        else if (blue)
         {
             if (transform.position.x > 44.9 && transform.position.x < 61 &&
                 transform.position.z > -5 && transform.position.z < 6 && !dead)
@@ -216,9 +211,9 @@ public class GhostMove : MonoBehaviour
 
         if (!limit)
         {
-            for (int i = 0; i < Walls.transform.childCount; ++i)
+            for (int i = 0; i < maze.transform.childCount; ++i)
             {
-                GameObject w = Walls.transform.GetChild(i).gameObject;
+                GameObject w = maze.transform.GetChild(i).gameObject;
 
                 if (Math.Round(transform.position.z) < w.transform.position.z + ((transform.localScale.z + w.transform.localScale.z) / 2)
                     && Math.Round(transform.position.z) > w.transform.position.z - ((transform.localScale.z + w.transform.localScale.z) / 2)
@@ -232,14 +227,14 @@ public class GhostMove : MonoBehaviour
         return limit;
     }
 
-    public bool Ghost_Limitcontrol()
+    public bool GhostLimitControl()
     {
         bool limit = false;
 
-        if ((Ghost_Up && Up_Limits()) ||
-            (Ghost_Left && Left_Limits()) ||
-            (Ghost_Down && Down_Limits()) ||
-            (Ghost_Right && Right_Limits()))
+        if ((ghostUp && UpLimits()) ||
+            (ghostLeft && LeftLimits()) ||
+            (ghostDown && DownLimits()) ||
+            (ghostRight && RightLimits()))
         {
             limit = true;
         } 
@@ -247,14 +242,14 @@ public class GhostMove : MonoBehaviour
         return limit;
     }
 
-    public bool Ghost_Limitcontrol_Direction(string direction)
+    public bool GhostLimitControlDirection(string direction)
     {
         bool limit = false;
 
-        if ((direction == "up" && Up_Limits()) ||
-            (direction == "left" && Left_Limits()) ||
-            (direction == "down" && Down_Limits()) ||
-            (direction == "right" && Right_Limits()))
+        if ((direction == "up" && UpLimits()) ||
+            (direction == "left" && LeftLimits()) ||
+            (direction == "down" && DownLimits()) ||
+            (direction == "right" && RightLimits()))
         {
             limit = true;
         } 
@@ -262,23 +257,23 @@ public class GhostMove : MonoBehaviour
         return limit;
     }
 
-    public bool[] Ghost_Directioncontrol()
+    public bool[] GhostDirectionControl()
     {
         bool [] limit = new bool[4] {false, false, false, false};
 
-        if (Up_Limits())
+        if (UpLimits())
         {
             limit[0] = true;
         }
-        if (Left_Limits())
+        if (LeftLimits())
         {
             limit[1] = true;
         }
-        if (Down_Limits())
+        if (DownLimits())
         {
             limit[2] = true;
         }
-        if (Right_Limits())
+        if (RightLimits())
         {
             limit[3] = true;
         }
@@ -286,135 +281,135 @@ public class GhostMove : MonoBehaviour
         return limit;
     }
 
-    private void Ghost_Target()
+    private void GhostTarget()
     {
-        Ghost_Up = false;
-        Ghost_Left = false;
-        Ghost_Down = false;
-        Ghost_Right = false;
+        ghostUp = false;
+        ghostLeft = false;
+        ghostDown = false;
+        ghostRight = false;
 
-        float target_X = 0;
-        float target_Z = 0;
+        float targetX = 0;
+        float targetZ = 0;
 
-        float up_move_X = transform.position.x;
-        float up_move_Z = transform.position.z + 1;
-        float left_move_X = transform.position.x - 1;
-        float left_move_Z = transform.position.z;
-        float down_move_X = transform.position.x;
-        float down_move_Z = transform.position.z - 1;
-        float right_move_X = transform.position.x + 1;
-        float right_move_Z = transform.position.z;
+        float upMoveX = transform.position.x;
+        float upMoveZ = transform.position.z + 1;
+        float leftMoveX = transform.position.x - 1;
+        float leftMoveZ = transform.position.z;
+        float downMoveX = transform.position.x;
+        float downMoveZ = transform.position.z - 1;
+        float rightMoveX = transform.position.x + 1;
+        float rightMoveZ = transform.position.z;
 
         if (mode.GetScatterMode())
         {
-            if (Red)
+            if (red)
             {
-                target_X = 90;
-                target_Z = 30;
+                targetX = 90;
+                targetZ = 30;
             }
-            else if (Pink)
+            else if (pink)
             {
-                target_X = 0;
-                target_Z = 30;
+                targetX = 0;
+                targetZ = 30;
             }
-            else if (Blue) 
+            else if (blue) 
             {
-                target_X = 90;
-                target_Z = -30;
+                targetX = 90;
+                targetZ = -30;
             }
-            else if (Orange)
+            else if (orange)
             {
-                target_X = 0;
-                target_Z = -30;
+                targetX = 0;
+                targetZ = -30;
             }
         }
         else
         {
-            if (Red)
+            if (red)
             {
-                target_X = Pacman.transform.position.x;
-                target_Z = Pacman.transform.position.z;
+                targetX = pacman.transform.position.x;
+                targetZ = pacman.transform.position.z;
             }
 
-            else if (Pink)
+            else if (pink)
             {
-                if ((Pacman.transform.eulerAngles.y > -2 && Pacman.transform.eulerAngles.y < 2) ||
-                    (Pacman.transform.eulerAngles.y > -358 && Pacman.transform.eulerAngles.y < 362))
+                if ((pacman.transform.eulerAngles.y > -2 && pacman.transform.eulerAngles.y < 2) ||
+                    (pacman.transform.eulerAngles.y > -358 && pacman.transform.eulerAngles.y < 362))
                 {
-                    target_X = Pacman.transform.position.x;
-                    target_Z = Pacman.transform.position.z + 10;
+                    targetX = pacman.transform.position.x;
+                    targetZ = pacman.transform.position.z + 10;
                 }
-                else if ((Pacman.transform.eulerAngles.y > 268 && Pacman.transform.eulerAngles.y < 272))
+                else if ((pacman.transform.eulerAngles.y > 268 && pacman.transform.eulerAngles.y < 272))
                 {
-                    target_X = Pacman.transform.position.x - 10;
-                    target_Z = Pacman.transform.position.z;
+                    targetX = pacman.transform.position.x - 10;
+                    targetZ = pacman.transform.position.z;
                 }
-                else if ((Pacman.transform.eulerAngles.y > 178 && Pacman.transform.eulerAngles.y < 182) ||
-                    (Pacman.transform.eulerAngles.y > -181 && Pacman.transform.eulerAngles.y < -178))
+                else if ((pacman.transform.eulerAngles.y > 178 && pacman.transform.eulerAngles.y < 182) ||
+                    (pacman.transform.eulerAngles.y > -181 && pacman.transform.eulerAngles.y < -178))
                 {
-                    target_X = Pacman.transform.position.x;
-                    target_Z = Pacman.transform.position.z - 10;
+                    targetX = pacman.transform.position.x;
+                    targetZ = pacman.transform.position.z - 10;
                 }
-                else if ((Pacman.transform.eulerAngles.y > 88 && Pacman.transform.eulerAngles.y < 92))
+                else if ((pacman.transform.eulerAngles.y > 88 && pacman.transform.eulerAngles.y < 92))
                 {
-                    target_X = Pacman.transform.position.x + 10;
-                    target_Z = Pacman.transform.position.z;
+                    targetX = pacman.transform.position.x + 10;
+                    targetZ = pacman.transform.position.z;
                 }
             }
-            else if (Blue)
+            else if (blue)
             {
-                float center_X = 0;
-                float center_Z = 0;
+                float centerX = 0;
+                float centerZ = 0;
 
-                if ((Pacman.transform.eulerAngles.y > -2 && Pacman.transform.eulerAngles.y < 2) ||
-                    (Pacman.transform.eulerAngles.y > -358 && Pacman.transform.eulerAngles.y < 362))
+                if ((pacman.transform.eulerAngles.y > -2 && pacman.transform.eulerAngles.y < 2) ||
+                    (pacman.transform.eulerAngles.y > -358 && pacman.transform.eulerAngles.y < 362))
                 {
-                    center_X = Pacman.transform.position.x;
-                    center_Z = Pacman.transform.position.z + 5;
+                    centerX = pacman.transform.position.x;
+                    centerZ = pacman.transform.position.z + 5;
                 }
-                else if ((Pacman.transform.eulerAngles.y > 268 && Pacman.transform.eulerAngles.y < 272))
+                else if ((pacman.transform.eulerAngles.y > 268 && pacman.transform.eulerAngles.y < 272))
                 {
-                    center_X = Pacman.transform.position.x - 5;
-                    center_Z = Pacman.transform.position.z;
+                    centerX = pacman.transform.position.x - 5;
+                    centerZ = pacman.transform.position.z;
                 }
-                else if ((Pacman.transform.eulerAngles.y > 178 && Pacman.transform.eulerAngles.y < 182) ||
-                    (Pacman.transform.eulerAngles.y > -181 && Pacman.transform.eulerAngles.y < -178))
+                else if ((pacman.transform.eulerAngles.y > 178 && pacman.transform.eulerAngles.y < 182) ||
+                    (pacman.transform.eulerAngles.y > -181 && pacman.transform.eulerAngles.y < -178))
                 {
-                    center_X = Pacman.transform.position.x;
-                    center_Z = Pacman.transform.position.z - 5;
+                    centerX = pacman.transform.position.x;
+                    centerZ = pacman.transform.position.z - 5;
                 }
-                else if ((Pacman.transform.eulerAngles.y > 88 && Pacman.transform.eulerAngles.y < 92))
+                else if ((pacman.transform.eulerAngles.y > 88 && pacman.transform.eulerAngles.y < 92))
                 {
-                    center_X = Pacman.transform.position.x + 5;
-                    center_Z = Pacman.transform.position.z;
+                    centerX = pacman.transform.position.x + 5;
+                    centerZ = pacman.transform.position.z;
                 }
 
-                float red_point_X = Blinky.transform.position.x;
-                float red_point_Z = Blinky.transform.position.z;
+                float redPointX = targetRed.transform.position.x;
+                float redPointZ = targetRed.transform.position.z;
 
-                target_X = center_X + (center_X - red_point_X);
-                target_Z = center_Z + (center_Z - red_point_Z);
+                targetX = centerX + (centerX - redPointX);
+                targetZ = centerZ + (centerZ - redPointZ);
             }
-            else if (Orange)
+            else if (orange)
             {
-                double pacman_orange_distance = Math.Sqrt(Math.Pow((Pacman.transform.position.x - transform.position.x), 2) + Math.Pow((Pacman.transform.position.z - transform.position.z), 2));
-                if (pacman_orange_distance > 20)
+                double pacmanOrangeDistance = Math.Sqrt(Math.Pow((pacman.transform.position.x - transform.position.x), 2) + Math.Pow((pacman.transform.position.z - transform.position.z), 2));
+                if (pacmanOrangeDistance > 20) // 20
                 {
-                    target_X = Pacman.transform.position.x;
-                    target_Z = Pacman.transform.position.z;
+                    targetX = pacman.transform.position.x;
+                    targetZ = pacman.transform.position.z;
                 }
                 else 
                 {
-                    target_X = 0;
-                    target_Z = -30;
+                    targetX = 0;
+                    targetZ = -30;
                 }
             }
         }
 
         if (mode.GetRunningMode())
         {
-            target_X = UnityEngine.Random.Range(0, 99);
-            target_Z = UnityEngine.Random.Range(30, -30);
+            targetX = UnityEngine.Random.Range(0, 99);
+            targetZ = UnityEngine.Random.Range(30, -30);
         }
 
         if (dead)
@@ -422,68 +417,68 @@ public class GhostMove : MonoBehaviour
             if(transform.position.x > 34.9f && transform.position.x < 60.1f
                 && transform.position.z < 10.1f && transform.position.z > -0.1f)
                 {
-                    if (Red)
+                    if (red)
                     {
-                        target_X = 45;
-                        target_Z = 0;
+                        targetX = 45;
+                        targetZ = 0;
                     }
-                    else if (Pink)
+                    else if (pink)
                     {
-                        target_X = 50;
-                        target_Z = 0;
+                        targetX = 50;
+                        targetZ = 0;
                     }
-                    else if (Blue)
+                    else if (blue)
                     {
-                        target_X = 40;
-                        target_Z = 0;
+                        targetX = 40;
+                        targetZ = 0;
                     }
-                    else if (Orange)
+                    else if (orange)
                     {
-                        target_X = 55;
-                        target_Z = 0;
+                        targetX = 55;
+                        targetZ = 0;
                     }
                 }
                 else 
                 {
                     if (transform.position.x > 50)
                     {
-                        target_X = 60;
-                        target_Z = 10;
+                        targetX = 60;
+                        targetZ = 10;
                     }
                     else 
                     {
-                        target_X = 35;
-                        target_Z = 10;
+                        targetX = 35;
+                        targetZ = 10;
                     }
                 }
         }
 
-        Target_.transform.position = new Vector3(target_X, 7, target_Z);
+        target.transform.position = new Vector3(targetX, 7, targetZ);
 
-        double up_distance = Math.Pow((target_X - up_move_X), 2) + Math.Pow((target_Z - up_move_Z), 2);
-        double left_distance = Math.Pow((target_X - left_move_X), 2) + Math.Pow((target_Z - left_move_Z), 2);
-        double down_distance = Math.Pow((target_X - down_move_X), 2) + Math.Pow((target_Z - down_move_Z), 2);
-        double right_distance = Math.Pow((target_X - right_move_X), 2) + Math.Pow((target_Z - right_move_Z), 2);
+        double upDistance = Math.Pow((targetX - upMoveX), 2) + Math.Pow((targetZ - upMoveZ), 2);
+        double leftDistance = Math.Pow((targetX - leftMoveX), 2) + Math.Pow((targetZ - leftMoveZ), 2);
+        double downDistance = Math.Pow((targetX - downMoveX), 2) + Math.Pow((targetZ - downMoveZ), 2);
+        double rightDistance = Math.Pow((targetX - rightMoveX), 2) + Math.Pow((targetZ - rightMoveZ), 2);
 
-        double[] distance = new double[4] {up_distance, left_distance, down_distance, right_distance};
+        double[] distance = new double[4] {upDistance, leftDistance, downDistance, rightDistance};
         string[] direction = new string[4] {"up", "left", "down", "right"};
 
         for (int i = distance.Length - 1; i > -1; --i)
         {
-            if (Ghost_Limitcontrol_Direction(direction[i]))
+            if (GhostLimitControlDirection(direction[i]))
             {
-                List<double> deleted_distance = new List<double>(distance);
-                deleted_distance.RemoveAt(i);
-                distance = deleted_distance.ToArray();
+                List<double> deletedDistance = new List<double>(distance);
+                deletedDistance.RemoveAt(i);
+                distance = deletedDistance.ToArray();
 
-                List<string> deleted_direction = new List<string>(direction);
-                deleted_direction.RemoveAt(i);
-                direction = deleted_direction.ToArray();
+                List<string> deletedDirection = new List<string>(direction);
+                deletedDirection.RemoveAt(i);
+                direction = deletedDirection.ToArray();
             }
         }
 
-        double distance_tmp;
-        string direction_tmp;
+        double distanceTmp;
+        string directionTmp;
 
         for (int i = 0; i < distance.Length - 1; ++i)
         {
@@ -491,13 +486,13 @@ public class GhostMove : MonoBehaviour
             {
                 if (distance[i] > distance[j])
                 {
-                    distance_tmp = distance[i];
+                    distanceTmp = distance[i];
                     distance[i] = distance[j];
-                    distance[j] = distance_tmp;
+                    distance[j] = distanceTmp;
 
-                    direction_tmp = direction[i];
+                    directionTmp = direction[i];
                     direction[i] = direction[j];
-                    direction[j] = direction_tmp;
+                    direction[j] = directionTmp;
                 }
             }
         }
@@ -505,7 +500,7 @@ public class GhostMove : MonoBehaviour
         if (distance.Length > 3 && distance[0] == distance[3])
         {
 
-            Ghost_Up = true;
+            ghostUp = true;
         }
         else
         {
@@ -518,11 +513,11 @@ public class GhostMove : MonoBehaviour
 
                 if (direction.Contains("up"))
                 {
-                    Ghost_Up = true;
+                    ghostUp = true;
                 }
                 else 
                 {
-                    Ghost_Left = true;
+                    ghostLeft = true;
                 }
             }
             else
@@ -543,17 +538,17 @@ public class GhostMove : MonoBehaviour
 
                     if (direction.Contains("up"))
                     {
-                        Ghost_Up = true;
+                        ghostUp = true;
                     }
                     else 
                     {
                         if (direction.Contains("left"))
                         {
-                            Ghost_Left = true;
+                            ghostLeft = true;
                         }
                         else 
                         {
-                            Ghost_Down = true;
+                            ghostDown = true;
                         }
                     }
                 }
@@ -561,19 +556,19 @@ public class GhostMove : MonoBehaviour
                 {
                     if (direction[0] == "up")
                     {
-                        Ghost_Up = true;
+                        ghostUp = true;
                     }
                     else if (direction[0] == "left")
                     {
-                        Ghost_Left = true;
+                        ghostLeft = true;
                     }
                     else if (direction[0] == "down")
                     {
-                        Ghost_Down = true;
+                        ghostDown = true;
                     }
                     else if (direction[0] == "right")
                     {
-                        Ghost_Right = true;
+                        ghostRight = true;
                     }
                 }
             }
@@ -581,7 +576,7 @@ public class GhostMove : MonoBehaviour
     }
 
 
-    private int Convert_2_5_division(float number)
+    private int Converted(float number)
     {
         int converted = Convert.ToInt32(number);
 
@@ -600,7 +595,7 @@ public class GhostMove : MonoBehaviour
 
     public void SetRunningModeFinishGhosts(bool value)
     {
-        running_mode_finish_ghosts = value;
+        panicModeFinishGhosts = value;
     }
 
     public void SetDead(bool value)
@@ -613,144 +608,142 @@ public class GhostMove : MonoBehaviour
         return dead;
     }
 
-
-    // Update is called once per frame
     void Update()
     {
         if (dead)
         {
             Material newMat = Resources.Load("Dead", typeof(Material)) as Material;
-            GetComponent<Renderer>().material = Head.GetComponent<Renderer>().material = newMat;
+            GetComponent<Renderer>().material = body.GetComponent<Renderer>().material = newMat;
             smoothFactor = 0.09f;
 
-            if ((Red && (transform.position.x > 44 && transform.position.x < 46 && 
+            if ((red && (transform.position.x > 44 && transform.position.x < 46 && 
                 transform.position.z < 0.01f && transform.position.z > -0.1f)) ||
-                (Pink && (transform.position.x > 49 && transform.position.x < 51 && 
+                (pink && (transform.position.x > 49 && transform.position.x < 51 && 
                 transform.position.z < 0.01f && transform.position.z > -0.1f)) ||
-                (Blue && (transform.position.x > 39 && transform.position.x < 41 && 
+                (blue && (transform.position.x > 39 && transform.position.x < 41 && 
                 transform.position.z < 0.01f && transform.position.z > -0.1f)) ||
-                (Orange && (transform.position.x > 54 && transform.position.x < 56 && 
+                (orange && (transform.position.x > 54 && transform.position.x < 56 && 
                 transform.position.z < 0.01f && transform.position.z > -0.1f)))
             {
                 dead = false;
 
-                if (Red)
+                if (red)
                 {
                     transform.position = new Vector3(45, 2.5f, 0);
                 }
-                else if (Pink)
+                else if (pink)
                 {
                     transform.position = new Vector3(50, 2.5f, 0);
                 }
-                else if (Blue)
+                else if (blue)
                 {
                     transform.position = new Vector3(40, 2.5f, 0);
                 }
-                else if (Orange)
+                else if (orange)
                 {
                     transform.position = new Vector3(55, 2.5f, 0);
                 }
 
                 transform.rotation = Quaternion.Euler(0, 0, 0);
-                running_mode_finish_ghosts = true;
+                panicModeFinishGhosts = true;
             }
         }
         else 
         {
-            if (mode.GetRunningModeFinish() && !running_mode_finish_ghosts)
+            if (mode.GetRunningModeFinish() && !panicModeFinishGhosts)
             {
-                running_mode_targetTime -= Time.deltaTime;
+                panicModeTargetTime -= Time.deltaTime;
 
-                if (running_mode_targetTime <= 0.0f)
+                if (panicModeTargetTime <= 0.0f)
                 {
-                    running_mode_material++;
-                    running_mode_targetTime = 0.25f;
+                    panicModeMaterial++;
+                    panicModeTargetTime = 0.25f;
                 }
 
-                if (running_mode_material == 1)
+                if (panicModeMaterial == 1)
                 {
                     Material newMat = Resources.Load("RunningBlue", typeof(Material)) as Material;
-                    GetComponent<Renderer>().material = Head.GetComponent<Renderer>().material = newMat;
+                    GetComponent<Renderer>().material = body.GetComponent<Renderer>().material = newMat;
                 }
-                else if (running_mode_material == 2)
+                else if (panicModeMaterial == 2)
                 {
                     Material newMat = Resources.Load("RunningWhite", typeof(Material)) as Material;
-                    GetComponent<Renderer>().material = Head.GetComponent<Renderer>().material = newMat;
-                    running_mode_material = 0;
+                    GetComponent<Renderer>().material = body.GetComponent<Renderer>().material = newMat;
+                    panicModeMaterial = 0;
                 }
             }
             else 
             {
-                if (Red)
+                if (red)
                 {
                     Material newMat = Resources.Load("RedGhost", typeof(Material)) as Material;
-                    GetComponent<Renderer>().material = Head.GetComponent<Renderer>().material = newMat;
+                    GetComponent<Renderer>().material = body.GetComponent<Renderer>().material = newMat;
                 }
-                else if (Pink)
+                else if (pink)
                 {
                     Material newMat = Resources.Load("PinkGhost", typeof(Material)) as Material;
-                    GetComponent<Renderer>().material = Head.GetComponent<Renderer>().material = newMat;
+                    GetComponent<Renderer>().material = body.GetComponent<Renderer>().material = newMat;
                 }
-                else if (Blue)
+                else if (blue)
                 {
                     Material newMat = Resources.Load("BlueGhost", typeof(Material)) as Material;
-                    GetComponent<Renderer>().material = Head.GetComponent<Renderer>().material = newMat;
+                    GetComponent<Renderer>().material = body.GetComponent<Renderer>().material = newMat;
                 }
-                else if (Orange)
+                else if (orange)
                 {
                     Material newMat = Resources.Load("OrangeGhost", typeof(Material)) as Material;
-                    GetComponent<Renderer>().material = Head.GetComponent<Renderer>().material = newMat;
+                    GetComponent<Renderer>().material = body.GetComponent<Renderer>().material = newMat;
                 }
             }
             smoothFactor = 0.03f;
         }
 
-        if (start_to_move) 
+        if (startToMove && gameGoOn) 
         {
-            if (Ghost_Up && !Ghost_Limitcontrol())
+            if (ghostUp && !GhostLimitControl())
             {
-                transform.position = new Vector3(Convert_2_5_division(transform.position.x), 3, transform.position.z + smoothFactor);
-                Y_rotation = 0;
+                transform.position = new Vector3(Converted(transform.position.x), 3, transform.position.z + smoothFactor);
+                rotationY = 0;
             }
-            if (Ghost_Left && !Ghost_Limitcontrol())
+            if (ghostLeft && !GhostLimitControl())
             {
-                transform.position = new Vector3(transform.position.x - smoothFactor, 3, Convert_2_5_division(transform.position.z));
-                Y_rotation = -90;
+                transform.position = new Vector3(transform.position.x - smoothFactor, 3, Converted(transform.position.z));
+                rotationY = -90;
             }
-            if (Ghost_Down && !Ghost_Limitcontrol())
+            if (ghostDown && !GhostLimitControl())
             {
-                transform.position = new Vector3(Convert_2_5_division(transform.position.x), 3, transform.position.z - smoothFactor);
-                Y_rotation = 180;
+                transform.position = new Vector3(Converted(transform.position.x), 3, transform.position.z - smoothFactor);
+                rotationY = 180;
             }
-            if (Ghost_Right && !Ghost_Limitcontrol())
+            if (ghostRight && !GhostLimitControl())
             {
-                transform.position = new Vector3(transform.position.x + smoothFactor, 3, Convert_2_5_division(transform.position.z));
-                Y_rotation = 90;
+                transform.position = new Vector3(transform.position.x + smoothFactor, 3, Converted(transform.position.z));
+                rotationY = 90;
             }
 
             if (transform.position.y != 3.5f)
             {
                 transform.position = new Vector3(transform.position.x, 3.5f, transform.position.z);
             }
-            transform.rotation = Quaternion.Euler(0, Y_rotation, 0);
+            transform.rotation = Quaternion.Euler(0, rotationY, 0);
 
-            New_Limit_Directions = Ghost_Directioncontrol();
+            newLimitDirections = GhostDirectionControl();
 
-            if (!Enumerable.SequenceEqual(Limit_Directions, New_Limit_Directions)
+            if (!Enumerable.SequenceEqual(limitDirections, newLimitDirections)
                 && Convert.ToInt32(transform.position.x) % 5 == 0
                 && Convert.ToInt32(transform.position.z) % 5 == 0)
             {
-                Ghost_Target();
-                Limit_Directions = New_Limit_Directions;
+                GhostTarget();
+                limitDirections = newLimitDirections;
             }
         }
 
         targetTime -= Time.deltaTime;
         if (targetTime <= 0.0f)
         {
-            if (!start_to_move)
+            if (!startToMove)
             {
-                start_to_move = true;
+                startToMove = true;
             }
         }
     }

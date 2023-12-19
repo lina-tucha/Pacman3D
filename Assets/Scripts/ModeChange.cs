@@ -6,17 +6,15 @@ public class ModeChange : MonoBehaviour
 {
 
     private float targetTime;
-
     private bool scatterMode;
     private int modeCounter;
     private int phaseCounter;
-
     private bool runningMode;
-    private int running_time_counter;
-    private bool running_mode_finish;
-    private float interval_targetTime;
+    private int runningTimeCounter;
+    private bool runningModeFinish;
+    private float intervalTargetTime;
 
-    // Start is called before the first frame update
+
     void Start()
     {
         targetTime = 1f;
@@ -25,11 +23,11 @@ public class ModeChange : MonoBehaviour
         phaseCounter = 0;
 
         runningMode = false;
-        running_time_counter = 0;
-        interval_targetTime = 1f;
+        runningTimeCounter = 0;
+        intervalTargetTime = 1f;
     }
 
-    // Update is called once per frame
+
     void Update()
     {
         targetTime -= Time.deltaTime;
@@ -38,24 +36,24 @@ public class ModeChange : MonoBehaviour
         {
             if (runningMode)
             {
-                running_time_counter++;
+                runningTimeCounter++;
 
-                if (running_time_counter == 32 || running_time_counter == 34
-                    || running_time_counter == 38 || running_time_counter == 36)
+                if (runningTimeCounter == 32 || runningTimeCounter == 34
+                    || runningTimeCounter == 38 || runningTimeCounter == 36)
                 {
-                    running_mode_finish = false;
+                    runningModeFinish = false;
                 }
-                else if (running_time_counter == 33 || running_time_counter == 35
-                    || running_time_counter == 37 || running_time_counter == 39)
+                else if (runningTimeCounter == 33 || runningTimeCounter == 35
+                    || runningTimeCounter == 37 || runningTimeCounter == 39)
                 {
-                    running_mode_finish = true;
+                    runningModeFinish = true;
                 }
-                else if (running_time_counter == 40) 
+                else if (runningTimeCounter == 40) 
                 {
                     runningMode = false;
-                    running_time_counter = 0;
-                    running_mode_finish = false;
-                    interval_targetTime = 1f;
+                    runningTimeCounter = 0;
+                    runningModeFinish = false;
+                    intervalTargetTime = 1f;
                 }
             }
             else
@@ -83,7 +81,7 @@ public class ModeChange : MonoBehaviour
                     phaseCounter++;
                 }
             }
-            targetTime = interval_targetTime;
+            targetTime = intervalTargetTime;
         }
     }
 
@@ -104,16 +102,16 @@ public class ModeChange : MonoBehaviour
 
     public void SetRunningModeFinish(bool value)
     {
-        running_mode_finish = value;
+        runningModeFinish = value;
     }
 
     public bool GetRunningModeFinish()
     {
-        return running_mode_finish;
+        return runningModeFinish;
     }
 
     public void SetIntervalTargetTime(float value)
     {
-        interval_targetTime = value;
+        intervalTargetTime = value;
     }
 }

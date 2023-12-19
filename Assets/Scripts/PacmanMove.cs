@@ -4,135 +4,129 @@ using UnityEngine;
 
 public class PacmanMove : MonoBehaviour
 {
-
     public float smoothFactor;
-
-    private float target_X;
-    private float target_Z;
-    private float Y_rotation;
-
-    private bool looking_North;
-    private bool looking_East;
-    private bool looking_South;
-    private bool looking_West;
-
-    private bool time_to_do;
+    private float targetX;
+    private float targetZ;
+    private float rotationY;
+    private bool lookingNorth;
+    private bool lookingEast;
+    private bool lookingSouth;
+    private bool lookingWest;
+    private bool timeToDo;
     private float targetTime;
 
 
-
-    // Start is called before the first frame update
-    void Start()
+    public void Start()
     {
-        target_X = transform.position.x;
-        target_Z = transform.position.z;
-        Y_rotation = transform.eulerAngles.y;
+        targetX = transform.position.x;
+        targetZ = transform.position.z;
+        rotationY = transform.eulerAngles.y;
 
-        looking_North = false;
-        looking_East = false;
-        looking_South = false;
-        looking_West = false;
+        lookingNorth = false;
+        lookingEast = false;
+        lookingSouth = false;
+        lookingWest = false;
 
-        time_to_do = true;
+        timeToDo = true;
         targetTime = 0.5f;
     }
 
-    // Update is called once per frame
+
     void FixedUpdate()
     {
         if (Input.GetKey(KeyCode.UpArrow)) 
         {
-            if (looking_North)
+            if (lookingNorth)
             {
-                LookingTarget(ref looking_North, ref looking_East, ref looking_South, ref looking_West);
+                LookingTarget(ref lookingNorth, ref lookingEast, ref lookingSouth, ref lookingWest);
             }
-            else if (looking_East)
+            else if (lookingEast)
             {
-                LookingTarget(ref looking_East, ref looking_North, ref looking_South, ref looking_West);
+                LookingTarget(ref lookingEast, ref lookingNorth, ref lookingSouth, ref lookingWest);
             }
-            else if (looking_South)
+            else if (lookingSouth)
             {
-                LookingTarget(ref looking_South, ref looking_East, ref looking_North, ref looking_West);
+                LookingTarget(ref lookingSouth, ref lookingEast, ref lookingNorth, ref lookingWest);
             }
-            else if (looking_West)
+            else if (lookingWest)
             {
-                LookingTarget(ref looking_West, ref looking_East, ref looking_South, ref looking_North);
+                LookingTarget(ref lookingWest, ref lookingEast, ref lookingSouth, ref lookingNorth);
             }
             else
             {
-                LookingTarget(ref looking_North, ref looking_East, ref looking_South, ref looking_West);
+                LookingTarget(ref lookingNorth, ref lookingEast, ref lookingSouth, ref lookingWest);
             }
         }
 
         if (Input.GetKey(KeyCode.RightArrow)) 
         {
-            if (looking_North)
+            if (lookingNorth)
             {
-                LookingTarget(ref looking_East, ref looking_North, ref looking_South, ref looking_West);
+                LookingTarget(ref lookingEast, ref lookingNorth, ref lookingSouth, ref lookingWest);
             }
-            else if (looking_East)
+            else if (lookingEast)
             {
-                LookingTarget(ref looking_South, ref looking_North, ref looking_East, ref looking_West);
+                LookingTarget(ref lookingSouth, ref lookingNorth, ref lookingEast, ref lookingWest);
             }
-            else if (looking_South)
+            else if (lookingSouth)
             {
-                LookingTarget(ref looking_West, ref looking_East, ref looking_North, ref looking_South);
+                LookingTarget(ref lookingWest, ref lookingEast, ref lookingNorth, ref lookingSouth);
             }
-            else if (looking_West)
+            else if (lookingWest)
             {
-                LookingTarget(ref looking_North, ref looking_East, ref looking_South, ref looking_West);
+                LookingTarget(ref lookingNorth, ref lookingEast, ref lookingSouth, ref lookingWest);
             }
             else
             {
-                LookingTarget(ref looking_East, ref looking_North, ref looking_South, ref looking_West);
+                LookingTarget(ref lookingEast, ref lookingNorth, ref lookingSouth, ref lookingWest);
             }
         }
 
         if (Input.GetKey(KeyCode.DownArrow)) 
         {
-            if (looking_North)
+            if (lookingNorth)
             {
-                LookingTarget(ref looking_South, ref looking_East, ref looking_North, ref looking_West);
+                LookingTarget(ref lookingSouth, ref lookingEast, ref lookingNorth, ref lookingWest);
             }
-            else if (looking_East)
+            else if (lookingEast)
             {
-                LookingTarget(ref looking_West, ref looking_North, ref looking_South, ref looking_East);
+                LookingTarget(ref lookingWest, ref lookingNorth, ref lookingSouth, ref lookingEast);
             }
-            else if (looking_South)
+            else if (lookingSouth)
             {
-                LookingTarget(ref looking_North, ref looking_East, ref looking_South, ref looking_West);
+                LookingTarget(ref lookingNorth, ref lookingEast, ref lookingSouth, ref lookingWest);
             }
-            else if (looking_West)
+            else if (lookingWest)
             {
-                LookingTarget(ref looking_East, ref looking_West, ref looking_South, ref looking_North);
+                LookingTarget(ref lookingEast, ref lookingWest, ref lookingSouth, ref lookingNorth);
             }
             else
             {
-                LookingTarget(ref looking_South, ref looking_East, ref looking_North, ref looking_West);
+                LookingTarget(ref lookingSouth, ref lookingEast, ref lookingNorth, ref lookingWest);
             }
         }
 
         if (Input.GetKey(KeyCode.LeftArrow)) 
         {
-            if (looking_North)
+            if (lookingNorth)
             {
-                LookingTarget(ref looking_West, ref looking_North, ref looking_South, ref looking_East);
+                LookingTarget(ref lookingWest, ref lookingNorth, ref lookingSouth, ref lookingEast);
             }
-            else if (looking_East)
+            else if (lookingEast)
             {
-                LookingTarget(ref looking_North, ref looking_South, ref looking_East, ref looking_West);
+                LookingTarget(ref lookingNorth, ref lookingSouth, ref lookingEast, ref lookingWest);
             }
-            else if (looking_South)
+            else if (lookingSouth)
             {
-                LookingTarget(ref looking_East, ref looking_West, ref looking_North, ref looking_South);
+                LookingTarget(ref lookingEast, ref lookingWest, ref lookingNorth, ref lookingSouth);
             }
-            else if (looking_West)
+            else if (lookingWest)
             {
-                LookingTarget(ref looking_South, ref looking_East, ref looking_North, ref looking_West);
+                LookingTarget(ref lookingSouth, ref lookingEast, ref lookingNorth, ref lookingWest);
             }
             else
             {
-                LookingTarget(ref looking_West, ref looking_North, ref looking_South, ref looking_East);
+                LookingTarget(ref lookingWest, ref lookingNorth, ref lookingSouth, ref lookingEast);
             }
         }
 
@@ -143,17 +137,17 @@ public class PacmanMove : MonoBehaviour
 
         SetTarget();
 
-        Vector3 toLocation = new Vector3(target_X, 2.5f, target_Z);
+        Vector3 toLocation = new Vector3(targetX, 2.5f, targetZ);
         transform.position = Vector3.MoveTowards(transform.position, toLocation, smoothFactor);
-        transform.rotation = Quaternion.Euler(0, Y_rotation, 0);
+        transform.rotation = Quaternion.Euler(0, rotationY, 0);
 
         targetTime -= Time.deltaTime;
 
         if(targetTime <= 0.0f)
         {
-            if (!time_to_do)
+            if (!timeToDo)
             {
-                time_to_do = true;
+                timeToDo = true;
                 targetTime = 0.5f;
             }
         }
@@ -161,60 +155,65 @@ public class PacmanMove : MonoBehaviour
 
     void LookingTarget(ref bool looking, ref bool notlooking1, ref bool notlooking2, ref bool notlooking3) 
     {
-        if (time_to_do) {
+        if (timeToDo) {
             notlooking1 = notlooking2 = notlooking3 = false;
             looking = true;
-            time_to_do = false;
+            timeToDo = false;
             targetTime = 0.5f;
         }
     }
 
     void SetTarget()
     {
-        if (looking_North)
+        if (lookingNorth)
         {
-            target_X = transform.position.x;
-            target_Z = 25;
-            Y_rotation = 0;
+            targetX = transform.position.x;
+            targetZ = 25;
+            rotationY = 0;
         }
-        else if (looking_East)
+        else if (lookingEast)
         {
-            target_X = 100;
-            target_Z = transform.position.z;
-            Y_rotation = 90;
+            targetX = 100;
+            targetZ = transform.position.z;
+            rotationY = 90;
         }
-        else if (looking_South)
+        else if (lookingSouth)
         {
-            target_X = transform.position.x;
-            target_Z = -25;
-            Y_rotation = 180;
+            targetX = transform.position.x;
+            targetZ = -25;
+            rotationY = 180;
         }
-        else if (looking_West)
+        else if (lookingWest)
         {
-            target_X = 0;
-            target_Z = transform.position.z;
-            Y_rotation = -90;
+            targetX = 0;
+            targetZ = transform.position.z;
+            rotationY = -90;
         }
         
     }
 
-    public bool Get_looking_North() 
+    public bool GetLookingNorth() 
     {
-        return looking_North;
+        return lookingNorth;
     }
 
-    public bool Get_looking_South() 
+    public bool GetLookingSouth() 
     {
-        return looking_South;
+        return lookingSouth;
     }
 
-    public bool Get_looking_East() 
+    public bool GetLookingEast() 
     {
-        return looking_East;
+        return lookingEast;
     }
 
-    public bool Get_looking_West() 
+    public bool GetLookingWest() 
     {
-        return looking_West;
+        return lookingWest;
+    }
+
+    public float GetRotationY() 
+    {
+        return rotationY;
     }
 }

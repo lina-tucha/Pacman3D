@@ -6,21 +6,19 @@ public class Mouth : MonoBehaviour
 {
     private bool mouthMovement;
     
-    // Start is called before the first frame update
     void Start()
     {
         mouthMovement = true;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (mouthMovement) {
-            StartCoroutine(ScaleDownAnimation(0.5f));
+            StartCoroutine(ScaleAnimation(0.5f));
         }
     }
 
-    IEnumerator ScaleDownAnimation(float time) 
+    IEnumerator ScaleAnimation(float time) 
     {
         mouthMovement = false;
 
